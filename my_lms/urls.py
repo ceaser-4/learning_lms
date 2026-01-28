@@ -24,6 +24,7 @@ from students.views import StudentViewSet
 # 比如它会自动生成 /students/ (列表) 和 /students/{id}/ (详情) 两个路由
 router = DefaultRouter()
 
+# 调用StudentViewSet视图里面的方法来处理request请求的数据
 router.register(r'students',StudentViewSet)
 
 urlpatterns = [
