@@ -1,3 +1,16 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from .models import Student
+from .serializers import StudentSerializer
 
-# Create your views here.
+
+# 定义一个视图集
+# ViewSet = View (视图) + Set (集合)，因为它一口气搞定了 5 个接口 (GET列表, POST创建, GET详情, PUT修改, DELETE删除)
+class StudentViewSet(viewsets.ModelViewSet):
+    # 1. 指定查询集 (QuerySet)
+    # 告诉程序：我要去哪里找数据？答：去 Student 表里把所有人都查出来。
+    # 这里也是未来做“数据权限控制”的地方（比如只能查自己班的学生）
+    queryset = Student.objects.all()
+
+    # 2. 指定序列化器
+    # 告诉程序：查出来的数据用哪个翻译官转成 JSON？
+    serializer_class = StudentSerializer

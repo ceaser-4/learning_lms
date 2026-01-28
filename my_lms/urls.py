@@ -15,8 +15,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
+from rest_framework.routers import DefaultRouter
+from students.views import StudentViewSet
+
+
+# 它的作用是自动生成 URL。
+# 比如它会自动生成 /students/ (列表) 和 /students/{id}/ (详情) 两个路由
+router = DefaultRouter()
+
+router.register(r'students',StudentViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),
 ]
