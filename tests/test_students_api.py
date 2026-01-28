@@ -24,7 +24,7 @@ class TestStudentAPI:
         assert isinstance(data, list)
 
 
-    def test_create_student(self):
+    def test_create_student(self,cleanup_student):
         """
         测试用例2：验证能否成功创建一个学生
         """
@@ -44,5 +44,5 @@ class TestStudentAPI:
 
         # 用断言校验返回的json里是不是创建的数据
         result = response.json()
-        assert result["name"] == new_student["name"]
-        assert result["student_id"] == new_student["student_id"]
+        assert result["name"] == "自动化测试员"
+        assert result["student_id"] == "TEST_001"
