@@ -8,6 +8,17 @@ class TestStudentAPI:
     """
     学生管理系统的接口测试类
     """
+    # 定义测试数据 (影分身的数据源)
+    # 格式：列表里面套元组。每个元组是一组测试数据。
+    # 设计 3 个场景：
+    # Case 1: 正常男生 (20岁)
+    # Case 2: 正常女生 (18岁)
+    # Case 3: 边界年龄 (100岁，假设系统允许)
+    test_data = [
+        ("自动化_张三", "TEST_001", 1, 20, 201),
+        ("自动化_李四", "TEST_002", 2, 18, 201),
+        ("自动化_王五", "TEST_003", 1, 100, 201),
+    ]
 
     def test_get_students(self):
         """
@@ -23,26 +34,31 @@ class TestStudentAPI:
         # 断言返回的是一个列表 (因为是获取所有学生)
         assert isinstance(data, list)
 
+    # 2. 应用参数化装饰器
+    # "name, s_id, gender, age, expected_status" 对应上面元组里的 5 个值
+    # ids 参数用于给每一条用例起个名字，方便在报告里看
+    @pytest.mark.parametrize("name, s_id, gender, age, expected_status", test_data,ids=["Male_Normal", "Female_Normal", "Age_Max"])
+    def test_create_student_batch(self, cleanup_student, name, s_id, gender, age, expected_status):
 
-    def test_create_student(self,cleanup_student):
-        """
-        测试用例2：验证能否成功创建一个学生
-        """
-        # 准备测试数据
-        # json里面字段的内容要和serializer里面定义的一样
+        print(f"\n[测试执行] 正在测试：{name},学号：{s_id}")
+
+        # 准备数据
         new_student = {
-            "name": "自动化测试员",
-            "student_id": "TEST_001",  # 注意：学号必须唯一，如果数据库里有了，再跑会报错
-            "gender": 1,  # 1代表男
-            "age": 25
+            "name": name,
+            "student_id": s_id,
+            "gender": gender,
+            "age": age
         }
 
-        # 模拟post请求，把new_student字典转换成json格式发送给服务器
+        # 发送请求
         response = requests.post(BASE_URL, json=new_student)
-        # 断言状态码是否为201（drf默认是201）
-        assert response.status_code == 201
 
-        # 用断言校验返回的json里是不是创建的数据
-        result = response.json()
-        assert result["name"] == "自动化测试员"
-        assert result["student_id"] == "TEST_001"
+        # 如果断言失败，就把 response.text (服务器返回的错误详情) 打印出来
+        assert response.status_code == expected_status, f"创建失败！服务器返回: {response.text}"
+
+        # 只有创建成功才校验返回数据
+        if expected_status == 201:
+            result = response.json()
+            assert result["name"] == name
+            assert result["student_id"] == s_id
+
