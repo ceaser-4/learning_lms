@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from .models import Student
 from .serializers import StudentSerializer
 
@@ -14,3 +15,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     # 2. 指定序列化器
     # 告诉程序：查出来的数据用哪个翻译官转成 JSON？
     serializer_class = StudentSerializer
+
+    # 添加鉴权校验
+    permission_classes = [IsAuthenticated]
+
