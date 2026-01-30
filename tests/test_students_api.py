@@ -50,5 +50,71 @@ class TestStudentAPI:
         # 断言判定实际code是否与用例中预期的code相同
         assert response.status_code == expected_status
 
+    @pytest.fixture
+    def setup_filter_data(self, auth_client):
+        """
+        这个 Fixture 负责给下面的测试准备 3 条特定的数据
+        注意：因为有 django_db 回滚，每次跑参数化用例时，这里都会重新执行，保证环境干净。
+        """
+        # 1. 20岁男生
+        auth_client.post('/api/students/', {"name": "Filter_张三", "student_id": "F001", "gender": 1, "age": 20})
+        # 2. 20岁女生 (假设你的 gender=2 是女)
+        auth_client.post('/api/students/', {"name": "Filter_李四", "student_id": "F002", "gender": 2, "age": 20})
+        # 3. 30岁男生
+        auth_client.post('/api/students/', {"name": "Filter_王五", "student_id": "F003", "gender": 1, "age": 30})
 
+    @pytest.mark.parametrize("query_params, expected_count, check_name", [
+        # 用例1: 精确查 20 岁 -> 应该有 2 人 (张三+李四)
+        ({"age": 20}, 2, None),
 
+        # 用例2: 组合查 20 岁且是男生 -> 只有 1 人 (张三)
+        ({"age": 20, "gender": 1}, 1, "Filter_张三"),
+
+        # 用例3: 模糊搜 "李四" -> 只有 1 人 (李四)
+        ({"search": "李四"}, 1, "Filter_李四"),
+
+        # 用例4: 查不存在的 (比如 100 岁) -> 0 人
+        ({"age": 100}, 0, None),
+    ])
+    def test_search_and_filter_pro(self, auth_client, setup_filter_data, query_params, expected_count, check_name):
+        """
+        专业版: 这里的 setup_filter_data 会先自动运行，把 3 个学生造好
+        然后根据 parametrize 的参数，跑 4 次测试
+        """
+        # 发送 GET 请求，带上查询参数 (data=...)
+        # 比如: /api/students/?age=20
+        response = auth_client.get('/api/students/', data=query_params)
+
+        # 验证状态码
+        assert response.status_code == 200
+
+        # 验证数量
+        results = response.json()['results']
+        assert len(results) == expected_count
+
+        # 验证具体的人名 (如果有指定的话)
+        if check_name:
+            assert results[0]['name'] == check_name
+
+    def test_ordering(self, auth_client, setup_filter_data):
+        """
+        测试排序功能
+        场景：
+        setup_filter_data 已经自动造了 3 个学生:
+        1. 张三 (20岁)
+        2. 李四 (20岁)
+        3. 王五 (30岁)
+        """
+        # 1. 测试按年龄倒序 (ordering=-age)
+        # 预期顺序：王五(30) -> 张三/李四(20)
+        response = auth_client.get('/api/students/', data={'ordering': '-age'})
+
+        assert response.status_code == 200
+        results = response.json()['results']
+
+        # 验证：第一名应该是 30 岁的 "Filter_王五"
+        assert results[0]['name'] == "Filter_王五"
+        # 验证：最后一名应该是 20 岁
+        assert results[2]['age'] == 20
+
+        print("\n✅ 排序测试通过！Day 12 完美收官！")

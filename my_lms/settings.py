@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'students'
+    'students',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -128,5 +129,9 @@ REST_FRAMEWORK = {
     # 告诉 DRF：请使用 SimpleJWT 来验证用户的身份
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    # 新增全局过滤配置
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
     ),
 }
