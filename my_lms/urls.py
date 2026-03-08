@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
-from students.views import StudentViewSet
+from students.views import StudentViewSet,TeacherViewSet
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -30,6 +30,7 @@ router = DefaultRouter()
 
 # 调用StudentViewSet视图里面的方法来处理request请求的数据
 router.register(r'students',StudentViewSet)
+router.register(r'teachers',TeacherViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

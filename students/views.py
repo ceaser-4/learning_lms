@@ -1,9 +1,9 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from .models import Student
+from .models import Student,Teacher
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
-from .serializers import StudentSerializer
+from .serializers import StudentSerializer,TeacherSerializer
 
 
 # 定义一个视图集
@@ -38,3 +38,6 @@ class StudentViewSet(viewsets.ModelViewSet):
     ordering_fields = ['age', 'student_id']
 
 
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer

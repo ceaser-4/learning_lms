@@ -1,0 +1,19 @@
+- case_name: "创建罗翔老师"
+  url: "/api/teachers/"
+  method: "POST"
+  data:
+    name: "罗翔"
+    teacher_id: "T_YAML_003"
+    subject: "刑法"
+  expect:
+    status_code: 201
+
+- case_name: "创建张三老师"
+  url: "/api/teachers/"
+  method: "POST"
+  data:
+    name: "张三"
+    teacher_id: "T_YAML_004"
+    subject: "民法"
+  expect:
+    status_code: 201

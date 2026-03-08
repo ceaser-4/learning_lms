@@ -20,3 +20,16 @@ class Student(models.Model):
     class Meta:
         verbose_name = "学生信息"
         verbose_name_plural = verbose_name
+
+
+class Teacher(models.Model):
+    name = models.CharField(max_length=50, verbose_name="老师姓名")
+    teacher_id = models.CharField(max_length=20, unique=True, verbose_name="工号")
+    subject = models.CharField(max_length=50, verbose_name="教授科目")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "老师信息"
+        verbose_name_plural = verbose_name

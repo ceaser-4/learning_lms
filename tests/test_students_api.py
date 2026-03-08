@@ -24,9 +24,9 @@ class TestStudentAPI:
     # "name, s_id, gender, age, expected_status" 对应上面元组里的 5 个值
     # ids 参数用于给每一条用例起个名字，方便在报告里看
     @pytest.mark.parametrize("name, s_id, gender, age, expected_status", [
-        ("自动化_张三", "TEST_001", 1, 30, 201),
-        ("自动化_李四", "TEST_002", 2, 20, 201),
-        ("自动化_边界", "TEST_003", 1, 100, 201),])
+        ("自动化_张三", "STU_001", 1, 30, 201),
+        ("自动化_李四", "STU_002", 2, 20, 201),
+        ("自动化_边界", "STU_003", 1, 100, 201),])
     def test_create_student_batch(self, auth_client , name, s_id, gender, age, expected_status):
 
         # 准备数据
@@ -57,11 +57,11 @@ class TestStudentAPI:
         注意：因为有 django_db 回滚，每次跑参数化用例时，这里都会重新执行，保证环境干净。
         """
         # 1. 20岁男生
-        auth_client.post('/api/students/', {"name": "Filter_张三", "student_id": "F001", "gender": 1, "age": 20})
+        auth_client.post('/api/students/', {"name": "Filter_张三", "student_id": "STU001", "gender": 1, "age": 20})
         # 2. 20岁女生 (假设你的 gender=2 是女)
-        auth_client.post('/api/students/', {"name": "Filter_李四", "student_id": "F002", "gender": 2, "age": 20})
+        auth_client.post('/api/students/', {"name": "Filter_李四", "student_id": "STU002", "gender": 2, "age": 20})
         # 3. 30岁男生
-        auth_client.post('/api/students/', {"name": "Filter_王五", "student_id": "F003", "gender": 1, "age": 30})
+        auth_client.post('/api/students/', {"name": "Filter_王五", "student_id": "STU003", "gender": 1, "age": 30})
 
     @pytest.mark.parametrize("query_params, expected_count, check_name", [
         # 用例1: 精确查 20 岁 -> 应该有 2 人 (张三+李四)
